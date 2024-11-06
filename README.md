@@ -82,8 +82,13 @@ A helper struct for retrieving comprehensive information about a post, including
    getPost(0)
    ```
    ![getpost](https://github.com/user-attachments/assets/ad7b4da8-bb86-4ccc-9c1a-9cfb48178fea)
-   
 
+6. **View Posts Counts**:
+   ```solidity
+   getTotalPosts()
+   ```
+   ![totalPosts](https://github.com/user-attachments/assets/1436332a-b07b-4376-bcae-706b21077b3d)
+   
 ## Restrictions
    - A user cannot both agree and disagree with the same post.
    - Each user can only agree or disagree once per post.
