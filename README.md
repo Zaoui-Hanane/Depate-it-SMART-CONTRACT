@@ -11,11 +11,6 @@ Each post has:
    - `author`: Address of the user who created the post.
    - `agreeCount`: Number of users who agree with the post.
    - `disagreeCount`: Number of users who disagree with the post.
-
-### 2. **Mappings**
-Mappings track user interactions:
-   - `hasAgreed`: Tracks if a user has agreed with a specific post.
-   - `hasDisagreed`: Tracks if a user has disagreed with a specific post.
    - `agreementMessages` and `disagreementMessages`: Stores each user’s argument for agreeing or disagreeing.
    - `agreementAddresses` and `disagreementAddresses`: Lists addresses of users who have agreed or disagreed.
 
