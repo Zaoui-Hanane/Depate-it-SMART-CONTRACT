@@ -69,19 +69,24 @@ A helper struct for retrieving comprehensive information about a post, including
    ```solidity
    agreeWithPost(0, "Blockchain ensures transparency.")
    ```
-
-3. **Disagree with a Post**:
+   ![agriment](https://github.com/user-attachments/assets/dd081ac2-3cd8-43f9-8d6b-0ae4de630806)
+   
+4. **Disagree with a Post**:
    ```solidity
    disagreeWithPost(0, "Blockchain is too energy-intensive.")
    ```
+   ![disagrement](https://github.com/user-attachments/assets/c0aa48af-7a27-4922-8d45-aba9af310643)
 
-4. **View Post Details**:
+5. **View Post Details**:
    ```solidity
    getPost(0)
    ```
+   ![getpost](https://github.com/user-attachments/assets/ad7b4da8-bb86-4ccc-9c1a-9cfb48178fea)
+   
 
 ## Restrictions
    - A user cannot both agree and disagree with the same post.
    - Each user can only agree or disagree once per post.
+     ![agree](https://github.com/user-attachments/assets/f40bef9e-3bbb-4d89-b8e1-bbb4a35c03aa)
 
-This contract promotes structured, decentralized debates by enforcing clear rules for interactions.
+
