@@ -63,6 +63,7 @@ A helper struct for retrieving comprehensive information about a post, including
    ```solidity
    publishPost("Blockchain should be widely adopted.")
    ```
+![puplish](https://github.com/user-attachments/assets/214d1a49-e558-4241-bafb-d8e7cd9675c9)
 
 2. **Agree with a Post**:
    ```solidity
