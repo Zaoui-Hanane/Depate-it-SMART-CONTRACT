@@ -1,7 +1,7 @@
 # MiniSocial Smart Contract - README
 
 ## Overview
-The **MiniSocial** smart contract is a simple social media-like platform, named *Depat*, built on the Ethereum blockchain. Users can publish posts on topics they wish to discuss, and others can agree or disagree with the post, adding their arguments to support their position. This creates a structured space for debate on the blockchain.
+The **MiniSocial** smart contract is a simple social media-like platform, named *Depate It*, built on the Ethereum blockchain. Users can publish posts on topics they wish to discuss, and others can agree or disagree with the post, adding their arguments to support their position. This creates a structured space for debate on the blockchain.
 
 ## Key Components
 
