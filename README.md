@@ -110,6 +110,10 @@ Users can agree or disagree with posts. This is done by submitting an argument f
 
 ![2](https://github.com/user-attachments/assets/50a76c05-74ac-431f-9985-c0f5636f01ca)
 
+Confirm the transaction
+
+![3](https://github.com/user-attachments/assets/da7c143c-3b89-490f-a42c-24724188434f)
+
    
 ## Restrictions
    - A user cannot both agree and disagree with the same post.
