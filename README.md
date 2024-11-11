@@ -106,6 +106,10 @@ The frontend fetches and displays all posts in the feed. Each post includes the 
 ### 4. **Agree/Disagree with a Post**
 Users can agree or disagree with posts. This is done by submitting an argument for their position. The count of agreements and disagreements will be updated accordingly.
 
+![1](https://github.com/user-attachments/assets/54e81b8a-74e6-4c96-aae5-52a37a87fd66)
+
+![2](https://github.com/user-attachments/assets/50a76c05-74ac-431f-9985-c0f5636f01ca)
+
    
 ## Restrictions
    - A user cannot both agree and disagree with the same post.
