@@ -88,6 +88,24 @@ A helper struct for retrieving comprehensive information about a post, including
    getTotalPosts()
    ```
    ![totalPosts](https://github.com/user-attachments/assets/1436332a-b07b-4376-bcae-706b21077b3d)
+
+## Frontend Integration
+
+The frontend of the **MiniSocial** platform is a simple web application that interacts with the Ethereum smart contract via the `web3.js` library. It allows users to connect their Ethereum wallet, publish posts, and engage with other users' posts. Below are the steps and features of the frontend:
+
+### 1. **Connect Wallet**
+- Users must connect their Ethereum wallet (e.g., MetaMask) to interact with the smart contract.
+- Once the wallet is connected, the user’s address is displayed on the interface.
+
+### 2. **Post a Message**
+Users can publish a post by entering a message and submitting it via a button. The post is recorded on the Ethereum blockchain via the `publishPost` function in the smart contract.
+
+### 3. **View Posts**
+The frontend fetches and displays all posts in the feed. Each post includes the author's address, message, the number of likes (agreeCount), and dislikes (disagreeCount). Users can also see the arguments provided by others.
+
+### 4. **Agree/Disagree with a Post**
+Users can agree or disagree with posts. This is done by submitting an argument for their position. The count of agreements and disagreements will be updated accordingly.
+
    
 ## Restrictions
    - A user cannot both agree and disagree with the same post.
