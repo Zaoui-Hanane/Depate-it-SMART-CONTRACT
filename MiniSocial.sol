@@ -7,10 +7,10 @@ contract MiniSocial {
         address author;
         uint agreeCount;
         uint disagreeCount;
+        uint256 timestamp;  // Add timestamp field
     }
 
     Post[] public posts;
-    //mapping the agrement and disagrement comments
 
     mapping(uint => mapping(address => bool)) public hasAgreed;
     mapping(uint => mapping(address => bool)) public hasDisagreed;
@@ -18,17 +18,19 @@ contract MiniSocial {
     mapping(uint => mapping(address => string)) public disagreementMessages;
     mapping(uint => address[]) public agreementAddresses;
     mapping(uint => address[]) public disagreementAddresses;
-    //publish a post
+
+    // Publish a post with the current timestamp
     function publishPost(string memory _message) public {
         posts.push(Post({
             message: _message,
             author: msg.sender,
             agreeCount: 0,
-            disagreeCount: 0
+            disagreeCount: 0,
+            timestamp: block.timestamp  // Store the timestamp when the post is created
         }));
     }
 
-    // agree with apost with providing why 
+    // Agree with a post, providing a reason
     function agreeWithPost(uint postId, string memory _arg) public {
         require(postId < posts.length, "Post does not exist.");
         require(!hasAgreed[postId][msg.sender], "You have already agreed.");
@@ -41,7 +43,7 @@ contract MiniSocial {
         agreementAddresses[postId].push(msg.sender);
     }
 
-     // disagree with apost with providing why 
+    // Disagree with a post, providing a reason
     function disagreeWithPost(uint postId, string memory _arg) public {
         require(postId < posts.length, "Post does not exist.");
         require(!hasDisagreed[postId][msg.sender], "You have already disagreed.");
@@ -54,22 +56,23 @@ contract MiniSocial {
         disagreementAddresses[postId].push(msg.sender);
     }
 
-    //get the total count of posts
+    // Get the total count of posts
     function getTotalPosts() public view returns (uint) {
         return posts.length;
     }
 
-    //groping data into struct to return the post information
+    // Struct to return post information, including timestamp
     struct PostData {
         string message;
         address author;
         uint agreeCount;
         uint disagreeCount;
+        uint256 timestamp;  // Include timestamp in returned struct
         string[] userAgreementMessages;
         string[] userDisagreementMessages;
     }
 
-    //get the details about a post
+    // Get the details of a post
     function getPost(uint postId) public view returns (PostData memory) {
         require(postId < posts.length, "Post does not exist.");
 
@@ -95,6 +98,7 @@ contract MiniSocial {
             author: post.author,
             agreeCount: post.agreeCount,
             disagreeCount: post.disagreeCount,
+            timestamp: post.timestamp, 
             userAgreementMessages: userAgreementMessages,
             userDisagreementMessages: userDisagreementMessages
         });
