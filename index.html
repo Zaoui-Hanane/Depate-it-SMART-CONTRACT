@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Mini Twitter DApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        /* Sidebar styling */
+        .sidebar {
+            width: 25%;
+            background-color: black;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .sidebar h1 {
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .sidebar i {
+            margin-right: 8px;
+        }
+        .sidebar p {
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .sidebar button {
+            background-color: #7D98A1;
+            color: #ffffff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .sidebar button:hover {
+            background-color: #357d75;
+        }
+        #userAddress {
+            margin-top: 15px;
+            font-size: 0.85em;
+            word-wrap: break-word;
+            text-align: center;
+        }
+        /* Main content styling */
+        .main-content {
+            width: 75%;
+            padding: 25px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        /* Tweet box styling */
+        .tweet-box {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .tweet-box h2 {
+            font-size: 1.2em;
+            color: #333;
+        }
+        .tweet-box textarea {
+            width: 100%;
+            height: 80px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            resize: none;
+            font-size: 0.9em;
+            background-color: #f7f9fb;
+        }
+        .tweet-box .counter {
+            text-align: right;
+            font-size: 0.8em;
+            color: #666;
+        }
+        .tweet-box button {
+            align-self: flex-end;
+            background-color: black;
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .tweet-box button:hover {
+            background-color: #264d73;
+        }
+        /* Feed styling */
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .post {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        .post p {
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #444;
+        }
+        .post .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .post .action-buttons button {
+            background: none;
+            border: none;
+            color: #336699;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .post .action-buttons button:hover {
+            color: #264d73;
+        }
+        .post .action-buttons i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1><i class="fas fa-bird"></i> Depate IT</h1>
+            <p>Connect your wallet to share your thoughts and engage with the community!</p>
+            <button id="connectWalletBtn" onclick="connectWallet()">
+                <i class="fas fa-wallet" ></i> Connect Wallet
+            </button>
+            <p id="userAddress"></p>
+        </div>
+        <div class="main-content">
+            <div class="tweet-box">
+                <h2>Add a New Post</h2>
+                <textarea id="postMessage" placeholder="What's on your mind?" maxlength="140"></textarea>
+                <div class="counter" id="charCounter">140</div>
+                <button onclick="addPost()">Post</button>
+            </div>
+            <div id="feed" class="feed"></div>
+        </div>
+    </div>
+
+    <script>
+        let web3, contract;
+        const contractAddress = '0x66Db6d191cd163F56197b767928A507dF8b47AA7';  // Replace with your deployed contract address
+        const abi = [
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "postId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_arg",
+				"type": "string"
+			}
+		],
+		"name": "agreeWithPost",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "postId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_arg",
+				"type": "string"
+			}
+		],
+		"name": "disagreeWithPost",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_message",
+				"type": "string"
+			}
+		],
+		"name": "publishPost",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "agreementAddresses",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "agreementMessages",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "disagreementAddresses",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "disagreementMessages",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "postId",
+				"type": "uint256"
+			}
+		],
+		"name": "getPost",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "message",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "agreeCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "disagreeCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string[]",
+						"name": "userAgreementMessages",
+						"type": "string[]"
+					},
+					{
+						"internalType": "string[]",
+						"name": "userDisagreementMessages",
+						"type": "string[]"
+					}
+				],
+				"internalType": "struct MiniSocial.PostData",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTotalPosts",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "hasAgreed",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "hasDisagreed",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "posts",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "author",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "agreeCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "disagreeCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const account = (await web3.eth.getAccounts())[0];
+                document.getElementById('userAddress').innerText = `Connected: ${account}`;
+                contract = new web3.eth.Contract(abi, contractAddress);
+                loadPosts(account);  // Load posts once connected
+            } else {
+                alert('Please install MetaMask to use this app.');
+            }
+        }
+
+        async function loadPosts(currentUser) {
+    const feedDiv = document.getElementById('feed');
+    feedDiv.innerHTML = '';
+    const postCount = await contract.methods.getTotalPosts().call();
+
+    for (let i = 0; i < postCount; i++) {
+        const post = await contract.methods.getPost(i).call();
+        const postDate = new Date(Number(post.timestamp) * 1000).toLocaleString();
+        const postDiv = document.createElement('div');
+        postDiv.className = 'post';
+        postDiv.innerHTML = `
+            <p><strong>Author:</strong> ${post.author}</p>
+            <p><strong>Message:</strong> ${post.message}</p>
+            <p><strong>Posted On:</strong> ${postDate}</p>
+            <p><strong>Likes:</strong> ${post.agreeCount} | <strong>Dislikes:</strong> ${post.disagreeCount}</p>
+            <div class="action-buttons">
+                <button onclick="agreeWithPost(${i})"><i class="far fa-thumbs-up"></i> Agree</button>
+                <button onclick="disagreeWithPost(${i})"><i class="far fa-thumbs-down"></i> Disagree</button>
+            </div>
+        `;
+        feedDiv.appendChild(postDiv);
+    }
+}
+
+
+        async function addPost() {
+            const message = document.getElementById('postMessage').value;
+            if (!message) {
+                alert("Message cannot be empty.");
+                return;
+            }
+            const account = (await web3.eth.getAccounts())[0];
+            await contract.methods.publishPost(message).send({ from: account });
+            document.getElementById('postMessage').value = '';
+            loadPosts(account);  // Reload the feed after adding a post
+        }
+
+        async function agreeWithPost(postId) {
+            const reason = prompt("Why do you agree with this post?");
+            if (reason) {
+                const account = (await web3.eth.getAccounts())[0];
+                await contract.methods.agreeWithPost(postId, reason).send({ from: account });
+                loadPosts(account);  // Reload the feed after agreeing
+            }
+        }
+
+        async function disagreeWithPost(postId) {
+            const reason = prompt("Why do you disagree with this post?");
+            if (reason) {
+                const account = (await web3.eth.getAccounts())[0];
+                await contract.methods.disagreeWithPost(postId, reason).send({ from: account });
+                loadPosts(account);  // Reload the feed after disagreeing
+            }
+        }
+    </script>
+</body>
+</html>
